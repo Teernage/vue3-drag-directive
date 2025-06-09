@@ -29,7 +29,14 @@ export default defineConfig([
         declaration: false, // 不在这里生成类型声明文件，由单独的配置处理
         sourceMap: true, // 生成 TypeScript source map
       }),
-      terser(), // 压缩和混淆代码
+      terser({
+        compress: {
+          drop_console: true, // 移除所有 console.* 调用
+          drop_debugger: true, // 移除 debugger 语句
+          // 或者更精细的控制
+          pure_funcs: ['console.log', 'console.info', 'console.debug'], // 只移除指定的函数
+        },
+      }),
     ],
   },
   // 构建 TypeScript 类型声明文件配置
