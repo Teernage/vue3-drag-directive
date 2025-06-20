@@ -1,4 +1,4 @@
-# Vue Drag List 指令使用文档
+# vue3-drag-directive 指令使用文档
 
 vue-drag-list 是一个轻量级的 Vue3 拖拽指令，提供了列表项的拖拽排序功能，支持平滑的 flip 动画效果。本文档将详细介绍如何安装和使用这个指令。
 
