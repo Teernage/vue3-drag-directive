@@ -2,6 +2,20 @@
 
 vue-drag-list 是一个轻量级的 Vue3 拖拽指令，提供了列表项的拖拽排序功能，支持平滑的 flip 动画效果。本文档将详细介绍如何安装和使用这个指令。
 
+## 目录结构
+
+```text
+vue3-drag-directive/
+├── src/
+│   └── directive.js # 指令源码
+├── examples/        # 示例项目目录
+│   ├── vue-demo/    # Vue 示例项目
+│   │
+│   └── html-demo    # 简单的 HTML 示例
+│
+└── README.md
+```
+
 ## 安装
 
 ### 使用 npm
@@ -101,6 +115,13 @@ const handleDragEnd = (event) => {
 
 ## 指令参数
 
-v-drag-list 指令接受一个对象作为参数，包含以下属性：
+`v-drag-list` 指令接受一个对象作为参数，包含以下属性：
 
-| 参数 | 类型 | 必填 | 默认值 | 描述 | |------|------|------|--------|------| | list   | Array | 是 | - | 要排序的数据列表，每个 item 项必须包含唯一的 id 属性 | | canDrag | Boolean | 否 | true | 是否启用拖拽功能 |
+- **list**（必填，Array）  
+  要排序的数据列表。每个 item 项必须包含唯一的 `id` 属性。
+
+- **canDrag**（可选，Boolean，默认值：true）  
+  是否启用拖拽功能。
+
+- **dragItemClass**（可选，String，默认值：'app-item'）  
+  列表项的类名，决定哪些元素可拖拽。需要和 `v-for` 渲染项的 class 保持一致。

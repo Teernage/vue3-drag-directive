@@ -7,69 +7,99 @@ import dts from 'rollup-plugin-dts';
 export default defineConfig([
   // 构建 JavaScript 文件配置
   {
-    input: 'src/index.ts', // 入口文件
+    input: 'src/index.ts',
     output: [
       {
-        file: 'dist/index.cjs.js', // CommonJS 格式输出文件
-        format: 'cjs', // 输出格式为 CommonJS
-        exports: 'named', // 重要：确保命名导出正确处理
-        sourcemap: true, // 生成 source map 文件
+        file: 'dist/index.cjs.js',
+        format: 'cjs',
+        exports: 'named',
       },
       {
-        file: 'dist/index.esm.js', // ES Module 格式输出文件
-        format: 'es', // 输出格式为 ES Module
-        sourcemap: true, // 生成 source map 文件
+        file: 'dist/index.esm.js',
+        format: 'es',
+      },
+      // 🆕 添加 UMD 格式 - CDN 使用必需
+      {
+        file: 'dist/index.umd.js',
+        format: 'umd',
+        name: 'VueDragList', // 全局变量名，要和你代码中的一致
+        globals: {
+          vue: 'Vue', // Vue 的全局变量名
+        },
+      },
+      // 🆕 添加压缩版本的 UMD
+      {
+        file: 'dist/index.umd.min.js',
+        format: 'umd',
+        name: 'VueDragList',
+        globals: {
+          vue: 'Vue',
+        },
+        plugins: [
+          terser({
+            compress: {
+              drop_console: true, // 去掉console
+              pure_funcs: ['console.log'], // 删除所有console.log
+            },
+            mangle: true, // 混淆变量名
+            format: {
+              comments: false, // 去掉注释
+            },
+          }),
+        ],
       },
     ],
-    external: ['vue'], // 将 Vue 标记为外部依赖，不打包进最终文件
+    external: ['vue'],
     plugins: [
-      nodeResolve(), // 解析 node_modules 中的模块
+      nodeResolve(),
       typescript({
-        tsconfig: './tsconfig.json', // 指定 TypeScript 配置文件
-        declaration: false, // 不在这里生成类型声明文件，由单独的配置处理
-        sourceMap: true, // 生成 TypeScript source map
+        tsconfig: './tsconfig.json',
+        declaration: false,
       }),
-      terser({
-        compress: {
-          drop_console: true, // 移除所有 console.* 调用
-          drop_debugger: true, // 移除 debugger 语句
-          // 或者更精细的控制
-          pure_funcs: ['console.log', 'console.info', 'console.debug'], // 只移除指定的函数
-        },
-      }),
+      // 🔧 只对非 UMD 格式应用 terser
+      // UMD 压缩版本在 output 中单独配置
     ],
   },
+
   // 构建 TypeScript 类型声明文件配置
   {
-    input: 'src/index.ts', // 入口文件
+    input: 'src/index.ts',
     output: {
-      file: 'dist/index.d.ts', // 类型声明文件输出路径
-      format: 'es', // 输出格式
+      file: 'dist/index.d.ts',
+      format: 'es',
     },
-    external: ['vue'], // 将 Vue 标记为外部依赖
-    plugins: [
-      dts(), // 生成 TypeScript 类型声明文件
-    ],
+    external: ['vue'],
+    plugins: [dts()],
   },
 ]);
 
 /*
-构建结果：
+🎯 构建结果：
 dist/
-├── index.esm.js    // ES Module 版本 - 现代前端项目使用
-├── index.cjs.js    // CommonJS 版本 - Node.js 环境使用  
-└── index.d.ts      // TypeScript 类型声明 - 提供类型支持
+├── index.esm.js        // ES Module 版本 - 现代前端项目
+├── index.cjs.js        // CommonJS 版本 - Node.js 环境
+├── index.umd.js        // UMD 版本 - CDN 使用
+├── index.umd.min.js    // UMD 压缩版本 - 生产环境 CDN
+└── index.d.ts          // TypeScript 类型声明
 
-使用场景：
-1. 现代前端项目：import MyLib from 'my-lib' → 使用 index.esm.js
-2. Node.js 项目：const MyLib = require('my-lib') → 使用 index.cjs.js
-3. TypeScript 项目：自动获得完整的类型支持
-
-对应 package.json 配置：
+📦 对应 package.json 配置：
 {
-  "main": "dist/index.cjs.js",    // Node.js 默认入口
-  "module": "dist/index.esm.js",  // ES Module 入口
-  "types": "dist/index.d.ts",     // TypeScript 类型声明
-  "files": ["dist"]               // 发布时包含的文件
+"main": "dist/index.cjs.js",
+"module": "dist/index.esm.js",
+"browser": "dist/index.umd.js",
+"types": "dist/index.d.ts",
+"exports": {
+  ".": {
+    "import": "./dist/index.esm.js",
+    "require": "./dist/index.cjs.js",
+    "browser": "./dist/index.umd.js",
+    "types": "./dist/index.d.ts"
+  }
+},
+"files": ["dist"]
 }
+
+🌐 CDN 使用示例：
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://unpkg.com/your-package/dist/index.umd.min.js"></script>
 */

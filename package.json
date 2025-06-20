@@ -1,6 +1,6 @@
 {
-  "name": "vue-drag-list",
-  "version": "0.0.4",
+  "name": "vue3-drag-directive",
+  "version": "0.1.4",
   "type": "module",
   "description": "🪶 Lightweight Vue3 drag directive",
   "main": "dist/index.cjs.js",
@@ -24,7 +24,14 @@
   "keywords": [
     "vue",
     "directive",
-    "typescript"
+    "typescript",
+    "drag",
+    "draggable",
+    "vue3",
+    "drag-and-drop",
+    "dnd",
+    "vue-directive",
+    "vue-draggable"
   ],
   "author": "",
   "license": "ISC",

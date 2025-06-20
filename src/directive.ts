@@ -1,7 +1,7 @@
-import { Flip } from './util/flip';
+import { Flip } from '@/util/flip';
 import { isEqual } from 'radash';
 
-const DRAGGING_CLASS = 'dragging';
+const DRAGGING_CLASS = 'vue-drag-list-directive__dragging';
 
 /**
  * 全局事件处理系统
@@ -43,11 +43,14 @@ export const vDragList = {
    * @param binding Vue指令的绑定值
    */
   mounted(el, binding) {
-    const { list, canDrag = true } = binding.value;
+    // 注入CSS样式
+    injectStyles();
+
+    const { list, canDrag = true, dragItemClass = 'app-item' } = binding.value;
 
     if (canDrag) {
       setChildrenDraggable(el, true);
-      initDragList(el, list);
+      initDragList(el, list, dragItemClass);
     }
   },
 
@@ -67,7 +70,7 @@ export const vDragList = {
     if (el._isDragging) return;
 
     // 检查数据是否发生变化
-    const { list, canDrag } = binding.value;
+    const { list, canDrag, dragItemClass = 'app-item' } = binding.value;
 
     // 如果数据有变化
     if (!isEqual(binding.value, binding.oldValue)) {
@@ -77,7 +80,7 @@ export const vDragList = {
       if (canDrag) {
         // 启用拖拽
         setChildrenDraggable(el, true);
-        initDragList(el, list);
+        initDragList(el, list, dragItemClass);
       } else {
         // 禁用拖拽，确保显示禁止图标
         setChildrenDraggable(el, false);
@@ -112,7 +115,7 @@ function clearSelection() {
  * @param el 拖拽列表的根元素
  * @param data 列表项的数据
  */
-function initDragList(el, data) {
+function initDragList(el, data, dragItemClass) {
   let currentDragNode = null;
   const list = el;
   let flip;
@@ -126,9 +129,7 @@ function initDragList(el, data) {
     clearSelection();
     const target = e.target;
 
-    if (!target || !target.classList.contains('app-item')) return;
-
-    console.log('handleDragStart', target);
+    if (!target || !target.classList.contains(dragItemClass)) return;
 
     el.dispatchEvent(
       new CustomEvent('drag-mode-start', {
@@ -150,7 +151,7 @@ function initDragList(el, data) {
   function handleDragEnter(e) {
     preventDefault(e);
 
-    const target = e.target.closest('.app-item');
+    const target = e.target.closest(`.${dragItemClass}`);
 
     if (!target || target === currentDragNode || target === el) {
       return;
@@ -280,6 +281,33 @@ function setChildrenDraggable(el, value) {
       }
     }
   });
+}
+
+/**
+ * 注入CSS样式到页面
+ */
+function injectStyles() {
+  // 内嵌的CSS样式 - 使用你提供的样式
+  const DRAGGING_STYLES = `
+  .${DRAGGING_CLASS} {
+    opacity: 0;
+    background-color: transparent;
+  }
+  .${DRAGGING_CLASS} * {
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
+`;
+
+  // 检查是否已经注入过样式
+  if (document.getElementById('drag-list-styles')) {
+    return;
+  }
+
+  const styleElement = document.createElement('style');
+  styleElement.id = 'drag-list-styles';
+  styleElement.textContent = DRAGGING_STYLES;
+  document.head.appendChild(styleElement);
 }
 
 // 全局注册
