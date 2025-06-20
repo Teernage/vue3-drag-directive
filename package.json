@@ -1,6 +1,6 @@
 {
   "name": "vue3-drag-directive",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "type": "module",
   "description": "🪶 Lightweight Vue3 drag directive",
   "main": "dist/index.cjs.js",
