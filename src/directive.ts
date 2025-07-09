@@ -35,6 +35,9 @@ const globalDragEvents = {
   },
 };
 
+// 全局变量 跟踪当前正在拖拽的列表ID
+let currentDraggingListId = null;
+
 export const vDragList = {
   /**
    * 在组件挂载时调用，初始化拖拽列表
@@ -50,6 +53,7 @@ export const vDragList = {
 
     if (canDrag) {
       setChildrenDraggable(el, true);
+      clearDraggingClass(el);
       initDragList(el, list, dragItemClass);
     }
   },
@@ -65,9 +69,10 @@ export const vDragList = {
     // 现象本质：第一次拖拽结束后，数据还没更新，用户又开始了第二次拖拽。
     // 第二次拖拽开始之后，这时自定义指令的 updated 才被触发，卸载了旧事件并重新初始化，currentDragNode 被重置为 null。
     // 第二次拖拽结束时，触发的是新的事件处理器，但由于没有经过 start事件，currentDragNode 还是 null。
-    // 此时去除拖拽样式（如透明度）时找不到正确的元素，没法去除dragging样式，所以表现为元素“被拖没了”。
+    // 此时去除拖拽样式（如透明度）时找不到正确的元素，没法去除dragging样式，所以表现为元素"被拖没了"。
     // 加 if (el._isDragging) return，可以避免拖拽中重新初始化，保证状态正确。
     if (el._isDragging) return;
+    clearDraggingClass(el);
 
     // 检查数据是否发生变化
     const { list, canDrag, dragItemClass = 'app-item' } = binding.value;
@@ -114,22 +119,33 @@ function clearSelection() {
  *
  * @param el 拖拽列表的根元素
  * @param data 列表项的数据
+ * @param dragItemClass 可拖拽项的类名
  */
 function initDragList(el, data, dragItemClass) {
-  let currentDragNode = null;
+  el.currentDragNode = null;
   const list = el;
   let flip;
+  // 生成一个唯一的ID，用于标识这个拖拽列表
+  const listId = `drag-list-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+  // 设置拖拽列表的唯一ID
+  el.dataset.dragListId = listId;
 
   function handleDragStart(e) {
-    // 清除所有文本选区：
+    // 清除所有文本选区
     // 1. 防止拖拽过程中出现文字选区残留，造成视觉干扰
     // 2. 避免在拖拽操作时误触发文本复制/拖动行为
     // 3. 解决浏览器在拖拽元素和文本选区同时存在时的行为冲突
     // (测试案例：当拖拽开始时如果存在文本选区，会导致拖拽图标显示异常)
     clearSelection();
+
     const target = e.target;
 
-    if (!target || !target.classList.contains(dragItemClass)) return;
+    if (
+      !target ||
+      target.closest(`[data-drag-list-id]`).dataset.dragListId !== listId
+    ) {
+      return;
+    }
 
     el.dispatchEvent(
       new CustomEvent('drag-mode-start', {
@@ -137,63 +153,79 @@ function initDragList(el, data, dragItemClass) {
       })
     );
 
+    // 设置当前正在拖拽的列表ID
+    currentDraggingListId = listId;
     el._isDragging = true;
 
     flip = new Flip(el.children, 0.5, DRAGGING_CLASS);
+
+    // 获取拖拽项
+    const dragItem = target.closest(`.${dragItemClass}`);
     setTimeout(() => {
-      target.classList.add(DRAGGING_CLASS);
+      // 当我们对一个元素快速完成多次拖拽时，会出现最后一次拖完之后，拖拽元素消失不见了的现象，这是快速连续拖拽导致的时序问题：当最后一次拖拽已结束(dragEnd已执行)，但其dragStart中的定时器延时回调仍在宏队列中时，执行回调的时候若不检查状态，会错误应用拖拽样式DRAGGING_CLASS导致元素视觉上"消失"，所以要应用拖拽样式前要判断当前拖拽流程是否还在进行
+      if (el._isDragging) {
+        dragItem.classList.add(DRAGGING_CLASS);
+      }
     });
 
     e.dataTransfer.effectAllowed = 'move';
-    currentDragNode = target;
+    el.currentDragNode = dragItem;
   }
 
   function handleDragEnter(e) {
     preventDefault(e);
 
+    // 如果有拖拽正在进行，并且不是当前列表，则忽略
+    if (currentDraggingListId && currentDraggingListId !== listId) {
+      return;
+    }
+
     const target = e.target.closest(`.${dragItemClass}`);
 
-    if (!target || target === currentDragNode || target === el) {
+    if (!target || target === el.currentDragNode || target === el) {
       return;
     }
 
     const children = Array.from(el.children);
-    const sourceIndex = children.indexOf(currentDragNode);
+    const sourceIndex = children.indexOf(el.currentDragNode);
     const targetIndex = children.indexOf(target);
 
     if (sourceIndex < targetIndex) {
-      list.insertBefore(currentDragNode, target.nextElementSibling);
+      list.insertBefore(el.currentDragNode, target.nextElementSibling);
     } else {
-      list.insertBefore(currentDragNode, target);
+      list.insertBefore(el.currentDragNode, target);
     }
     flip.play();
   }
 
   function handleDragEnd(e) {
     preventDefault(e);
-    currentDragNode.classList.remove(DRAGGING_CLASS);
 
-    const updatedData = Array.from(el.children)
-      .filter(
-        (child: HTMLDivElement) =>
-          !!child && !!child.dataset && !!child.dataset.id
-      )
-      .map((child: HTMLDivElement) => {
-        return data.find((i) => String(i.id) === String(child.dataset.id));
-      })
-      .filter((item) => !!item); // 这里明确过滤掉 undefined/null
+    if (el.currentDragNode) {
+      el.currentDragNode.classList.remove(DRAGGING_CLASS);
 
-    el.dispatchEvent(
-      new CustomEvent('drag-mode-end', {
-        detail: {
-          updatedData,
-          draggedItemData:
-            updatedData.find(
-              (item) => item.id === currentDragNode.dataset.id
-            ) || null,
-        },
-      })
-    );
+      const updatedData = Array.from(el.children)
+        .filter(
+          (child: HTMLDivElement) =>
+            !!child && !!child.dataset && !!child.dataset.id
+        )
+        .map((child: HTMLDivElement) => {
+          return data.find((i) => String(i.id) === String(child.dataset.id));
+        })
+        .filter((item) => !!item); // 这里明确过滤掉 undefined/null
+
+      el.dispatchEvent(
+        new CustomEvent('drag-mode-end', {
+          detail: {
+            updatedData,
+            draggedItemData:
+              updatedData.find(
+                (item) => item.id === el.currentDragNode.dataset.id
+              ) || null,
+          },
+        })
+      );
+    }
 
     el._isDragging = false;
   }
@@ -209,21 +241,7 @@ function initDragList(el, data, dragItemClass) {
   el.addEventListener('dragover', preventDefault);
   el.addEventListener('drop', preventDefault);
 
-  /**
-   * 使用全局事件系统添加全局事件
-   *
-   * 为什么需要全局事件：
-   * 1. 拖拽过程中，鼠标可能会离开拖拽容器，进入页面其他区域
-   * 2. 如果只在容器元素上阻止默认事件，当鼠标移到容器外时，
-   *    浏览器会恢复默认行为，显示"禁止"图标或中断拖拽
-   * 3. 在window上阻止默认事件，确保无论鼠标拖到页面哪里，
-   *    拖拽行为都保持一致，不会被浏览器默认行为干扰
-   *
-   * 这解决了拖拽过程中的常见bug：
-   * - 拖拽时鼠标离开容器导致拖拽中断
-   * - 拖拽过程中出现"禁止"图标
-   * - 拖拽过程中页面闪烁
-   */
+  // 使用全局事件系统添加全局事件
   globalDragEvents.add();
 
   // 保存事件处理函数引用以便卸载时移除
@@ -241,7 +259,7 @@ function initDragList(el, data, dragItemClass) {
  * @param el HTML元素，表示拖拽列表的容器
  */
 function unmountDragList(el) {
-  if (!el._dragListHandlers) return; // 没有事件处理器就直接返回
+  if (!el._dragListHandlers || el._isDragging) return; // 没有事件处理器就直接返回
 
   const { handleDragStart, handleDragEnter, handleDragEnd, preventDefault } =
     el._dragListHandlers;
@@ -256,11 +274,24 @@ function unmountDragList(el) {
   // 使用全局事件系统移除全局事件
   globalDragEvents.remove();
 
+  // 在卸载前清除所有拖拽样式
+  clearDraggingClass(el);
+
   // 移除 draggable 属性
   setChildrenDraggable(el, false);
   el._isDragging = false;
 
   delete el._dragListHandlers;
+}
+
+function clearDraggingClass(el) {
+  if (el.children) {
+    Array.from(el.children).forEach((child: HTMLElement) => {
+      if (child.classList && child.classList.contains(DRAGGING_CLASS)) {
+        child.classList.remove(DRAGGING_CLASS);
+      }
+    });
+  }
 }
 
 /**
@@ -271,7 +302,8 @@ function unmountDragList(el) {
  */
 function setChildrenDraggable(el, value) {
   if (!el || !el.children) return;
-  Array.from(el.children).forEach((child: HTMLDivElement) => {
+
+  Array.from(el.children).forEach((child: HTMLElement) => {
     // 只对有 data-id 的元素设置 draggable
     if (child.hasAttribute('data-id')) {
       if (value) {
@@ -287,17 +319,14 @@ function setChildrenDraggable(el, value) {
  * 注入CSS样式到页面
  */
 function injectStyles() {
-  // 内嵌的CSS样式 - 使用你提供的样式
+  // 内嵌的CSS样式
   const DRAGGING_STYLES = `
+  /* 被拖拽元素的样式 */
   .${DRAGGING_CLASS} {
     opacity: 0;
     background-color: transparent;
-  }
-  .${DRAGGING_CLASS} * {
-    opacity: 0 !important;
-    visibility: hidden !important;
-  }
-`;
+  } 
+  `;
 
   // 检查是否已经注入过样式
   if (document.getElementById('drag-list-styles')) {
