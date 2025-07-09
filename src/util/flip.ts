@@ -87,7 +87,9 @@ export const Flip = (function () {
           return;
         }
 
+        let timer;
         this.isPlaying = true;
+        let finished = false; // 防止多次执行
 
         this.recordLast();
         const isInverted: boolean = this.invert();
@@ -109,6 +111,9 @@ export const Flip = (function () {
           this.dom.style.transform = 'none';
 
           const onComplete = () => {
+            if (finished) return;
+            finished = true;
+            clearTimeout(timer); //  transitionend 先触发时清除定时器
             this.reset();
             this.recordFirst();
             resolve();
@@ -121,6 +126,10 @@ export const Flip = (function () {
           this.dom.addEventListener('transitionend', onComplete, {
             once: true,
           });
+
+          // 兜底定时器
+          const durationMs = parseFloat(this.durationTime) * 1000;
+          timer = setTimeout(onComplete, durationMs + 50);
         });
       });
     }
