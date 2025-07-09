@@ -49,14 +49,6 @@ function handleDragModeEnd(event) {
 }
 </script>
 
-<script>
-export default {
-  directives: {
-    dragList: (await import('vue-drag-list')).default,
-  },
-};
-</script>
-
 <style scoped>
 * {
   margin: 0;
@@ -143,21 +135,5 @@ body {
 }
 .app-item[data-id='item-9'] {
   background: linear-gradient(135deg, #667eea, #764ba2);
-}
-
-.clicked {
-  animation: pulse 0.3s ease-in-out;
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(0.95);
-  }
-  100% {
-    transform: scale(1);
-  }
 }
 </style>
