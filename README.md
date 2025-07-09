@@ -1,6 +1,6 @@
 # vue3-drag-directive 指令使用文档
 
-vue-drag-list 是一个轻量级的 Vue3 拖拽指令，提供了列表项的拖拽排序功能，支持平滑的 flip 动画效果。本文档将详细介绍如何安装和使用这个指令。
+vue3-drag-directive 是一个轻量级的 Vue3 拖拽指令，提供了列表项的拖拽排序功能，支持平滑的 flip 动画效果。本文档将详细介绍如何安装和使用这个指令。
 
 源码仓库地址：https://github.com/Teernage/vue3-drag-directive
 
@@ -22,15 +22,15 @@ vue3-drag-directive/
 
 ### 使用 npm
 
-npm install vue-drag-list
+npm install vue3-drag-directive
 
 ### 使用 yarn
 
-yarn add vue-drag-list
+yarn add vue3-drag-directive
 
 ### 使用 pnpm
 
-pnpm add vue-drag-list
+pnpm add vue3-drag-directive
 
 ## 使用方式
 
@@ -40,7 +40,7 @@ pnpm add vue-drag-list
 
 ```ts
 import { createApp } from 'vue';
-import DragListPlugin from 'vue-drag-list';
+import DragListPlugin from 'vue3-drag-directive';
 import App from './App.vue';
 
 const app = createApp(App);
@@ -100,7 +100,7 @@ app.mount('#app');
 <script setup>
 import { ref } from 'vue';
 // 正确的导入方式：使用 v 前缀
-import { vDragList } from 'vue-drag-list';
+import { vDragList } from 'vue3-drag-directive';
 
 const items = ref([
   { id: 1, name: '项目 1' },
