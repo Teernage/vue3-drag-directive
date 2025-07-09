@@ -1,16 +1,24 @@
+# 方式 1： 在项目中直接使用指令源代码的方式：
+
+## npm install
+
+## npm run dev 运行项目即可看到效果。
+
+# 方式 2： 通过 npm 包安装自定义拖拽指令的方式：
+
 ## 安装 下载拖拽指令
 
 ### 使用 npm
 
-npm install vue-drag-list
+npm install vue3-drag-directive
 
 ### 使用 yarn
 
-yarn add vue-drag-list
+yarn add vue3-drag-directive
 
 ### 使用 pnpm
 
-pnpm add vue-drag-list
+pnpm add vue3-drag-directive
 
 ## 使用方式
 
@@ -20,7 +28,7 @@ pnpm add vue-drag-list
 
 ```ts
 import { createApp } from 'vue';
-import DragListPlugin from 'vue-drag-list';
+import DragListPlugin from 'vue3-drag-directive';
 import App from './App.vue';
 
 const app = createApp(App);
@@ -80,7 +88,7 @@ app.mount('#app');
 <script setup>
 import { ref } from 'vue';
 // 正确的导入方式：使用 v 前缀
-import { vDragList } from 'vue-drag-list';
+import { vDragList } from 'vue3-drag-directive';
 
 const items = ref([
   { id: 1, name: '项目 1' },
