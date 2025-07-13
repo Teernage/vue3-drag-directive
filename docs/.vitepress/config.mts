@@ -2,6 +2,7 @@ import { defineConfig } from 'vitepress'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
+  base: "/vue3-drag-directive/",
   title: "My Awesome Project",
   description: "A VitePress Site",
   themeConfig: {
