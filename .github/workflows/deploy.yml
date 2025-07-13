@@ -38,12 +38,15 @@ jobs:
         uses: actions/configure-pages@v4
 
       - name: Install dependencies
-        run: pnpm install
+        run: |
+          cd docs
+          pnpm install
 
       - name: Build with VitePress
         run: |
-          pnpm --prefix ./docs docs:build
-          touch ./docs/.nojekyll  # 在docs目录创建.nojekyll
+          cd docs
+          pnpm docs:build
+          touch .vitepress/dist/.nojekyll
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
