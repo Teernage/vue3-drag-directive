@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4 # 更新到 v4
         with:
           fetch-depth: 0
 
@@ -29,29 +29,26 @@ jobs:
           version: 8.6.12
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4 # 更新到 v4
         with:
           node-version: 18
           cache: pnpm
 
       - name: Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v4 # 更新到 v4
 
       - name: Install dependencies
-        run: |
-          cd docs
-          pnpm install
+        run: pnpm install
 
       - name: Build with VitePress
         run: |
-          cd docs
-          pnpm docs:build
-          touch .vitepress/dist/.nojekyll
+          pnpm docs:build  
+          touch .nojekyll
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v3 # 更新到 v3
         with:
-          path: docs/.vitepress/dist
+          path: .vitepress/dist
 
   deploy:
     environment:
@@ -63,4 +60,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v4 # 更新到 v4
