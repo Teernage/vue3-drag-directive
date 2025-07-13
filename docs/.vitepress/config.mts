@@ -2,8 +2,8 @@ import { defineConfig } from 'vitepress'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  base: "/docs/",
-  title: "My Awesome Project",
+  base: '/vue3-drag-directive/', // 应该匹配你的仓库名
+  title: 'vue3-drag-directive',
   description: "A VitePress Site",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
