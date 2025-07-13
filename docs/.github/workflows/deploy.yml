@@ -42,8 +42,8 @@ jobs:
 
       - name: Build with VitePress
         run: |
-          pnpm --prefix ./docs docs:build  # 在docs目录执行构建
-          touch ../../dist/.nojekyll  # 在项目根目录创建.nojekyll
+          pnpm --prefix ./docs docs:build
+          touch ./docs/.nojekyll  # 在docs目录创建.nojekyll
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

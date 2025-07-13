@@ -4,7 +4,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "docs:dev": "vitepress dev",
-    "docs:build": "vitepress build --outDir ../../dist", 
+    "docs:build": "vitepress build --outDir ./dist",
     "docs:preview": "vitepress preview"
   },
   "devDependencies": {
