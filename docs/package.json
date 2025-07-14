@@ -1,0 +1,23 @@
+{
+  "name": "vue3-drag-directive-docs",
+  "version": "1.0.0",
+  "description": "Vue3 Drag Directive Documentation",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "keywords": [
+    "vue3",
+    "drag",
+    "directive",
+    "documentation"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "vitepress": "^1.0.0-rc.40"
+  }
+}

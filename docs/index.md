@@ -1,0 +1,27 @@
+---
+layout: home
+hero:
+  name: Vue3 Drag Directive
+  text: 轻量级、高性能的拖拽排序解决方案
+  tagline: 简单易用的Vue3拖拽列表指令
+  actions:
+    - theme: brand
+      text: 快速开始
+      link: /guide/getting-started
+    - theme: alt
+      text: 在 GitHub 上查看
+      link: https://github.com/yourusername/vue3-drag-directive
+features:
+  - icon: 🚀
+    title: 高性能
+    details: 基于FLIP动画技术，提供流畅的拖拽体验
+  - icon: 💡
+    title: 轻量级
+    details: 无外部依赖，体积小，加载快
+  - icon: 🛠️
+    title: 易于使用
+    details: 以指令形式提供，简单集成到现有项目
+  - icon: 🔌
+    title: 灵活配置
+    details: 支持多种配置选项，满足不同场景需求
+---
