@@ -1,4 +1,4 @@
-name: Deploy VitePress site to Pages
+name: Deploy vitePress site to Pages
 
 on:
   # 在 main 分支上的推送触发部署
