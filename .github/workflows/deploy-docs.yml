@@ -48,10 +48,14 @@ jobs:
           cd docs
           npm run build
       
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
+      # 使用直接上传方式替代 actions/upload-pages-artifact
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-artifact@v4
         with:
+          name: github-pages
           path: docs/.vitepress/dist
+          retention-days: 1
+          if-no-files-found: error
 
   # 部署工作
   deploy:
@@ -61,6 +65,14 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: github-pages
+          path: ./dist
+          
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
+        with:
+          artifact_name: github-pages
