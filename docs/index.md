@@ -9,8 +9,8 @@ hero:
       text: 快速开始
       link: /guide/getting-started
     - theme: alt
-      text: 在 GitHub 上查看
-      link: https://github.com/yourusername/vue3-drag-directive
+      text: 在 GitHub 上查看源码
+      link: https://github.com/Teernage/vue3-drag-directive
 features:
   - icon: 🚀
     title: 高性能
