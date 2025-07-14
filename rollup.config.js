@@ -1,53 +1,51 @@
-import { defineConfig } from 'rollup';
 import typescript from '@rollup/plugin-typescript';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import terser from '@rollup/plugin-terser';
 import dts from 'rollup-plugin-dts';
 
-export default defineConfig([
+// terser 配置 - 提取为常量以避免重复
+const terserOptions = {
+  compress: {
+    pure_getters: true,
+    unsafe: true,
+    unsafe_comps: true,
+    drop_console: true,
+    passes: 2, // 多次压缩可以进一步减小体积
+  },
+  mangle: true, // 混淆变量名
+  format: {
+    comments: false, // 去掉注释
+  },
+};
+
+export default [
   // 构建 JavaScript 文件配置
   {
     input: 'src/index.ts',
     output: [
+      // ESM 格式 - 压缩版本
       {
-        file: 'dist/index.cjs.js',
-        format: 'cjs',
-        exports: 'named',
-      },
-      {
-        file: 'dist/index.esm.js',
+        file: 'dist/index.esm.min.js',
         format: 'es',
+        plugins: [terser(terserOptions)],
       },
-      // 🆕 添加 UMD 格式 - CDN 使用必需
-      {
-        file: 'dist/index.umd.js',
-        format: 'umd',
-        name: 'VueDragList', // 全局变量名，要和你代码中的一致
-        globals: {
-          vue: 'Vue', // Vue 的全局变量名
-        },
-      },
-      // 🆕 添加压缩版本的 UMD
-      {
-        file: 'dist/index.umd.min.js',
-        format: 'umd',
-        name: 'VueDragList',
-        globals: {
-          vue: 'Vue',
-        },
-        plugins: [
-          terser({
-            compress: {
-              drop_console: true, // 去掉console
-              pure_funcs: ['console.log'], // 删除所有console.log
-            },
-            mangle: true, // 混淆变量名
-            format: {
-              comments: false, // 去掉注释
-            },
-          }),
-        ],
-      },
+      // // CommonJS 格式 - 压缩
+      // {
+      //   file: 'dist/index.cjs.js',
+      //   format: 'cjs',
+      //   exports: 'named',
+      //   plugins: [terser(terserOptions)],
+      // },
+      // // UMD 格式 - 压缩
+      // // {
+      // //   file: 'dist/index.umd.min.js',
+      // //   format: 'umd',
+      // //   name: 'VueDragList',
+      // //   globals: {
+      // //     vue: 'Vue',
+      // //   },
+      // //   plugins: [terser(terserOptions)],
+      // // },
     ],
     external: ['vue'],
     plugins: [
@@ -55,10 +53,18 @@ export default defineConfig([
       typescript({
         tsconfig: './tsconfig.json',
         declaration: false,
+        // 启用 removeComments 以减少体积
+        compilerOptions: {
+          removeComments: true,
+        },
       }),
-      // 🔧 只对非 UMD 格式应用 terser
-      // UMD 压缩版本在 output 中单独配置
     ],
+    // 添加 treeshake 配置以更积极地移除未使用的代码
+    treeshake: {
+      moduleSideEffects: false,
+      propertyReadSideEffects: false,
+      tryCatchDeoptimization: false,
+    },
   },
 
   // 构建 TypeScript 类型声明文件配置
@@ -71,7 +77,7 @@ export default defineConfig([
     external: ['vue'],
     plugins: [dts()],
   },
-]);
+];
 
 /*
 🎯 构建结果：

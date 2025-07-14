@@ -1,5 +1,5 @@
 import { Flip } from '@/util/flip';
-import { isEqual } from 'radash';
+import { isEqual } from './util';
 
 const DRAGGING_CLASS = 'vue-drag-list-directive__dragging';
 

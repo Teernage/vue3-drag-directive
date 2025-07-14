@@ -9,8 +9,7 @@
   "homepage": "https://teernage.github.io/vue3-drag-directive",
   "exports": {
     ".": {
-      "import": "./dist/index.esm.js",
-      "require": "./dist/index.cjs.js",
+      "import": "./dist/index.esm.min.js",
       "types": "./dist/index.d.ts"
     }
   },
@@ -38,9 +37,6 @@
   "license": "ISC",
   "peerDependencies": {
     "vue": "^3.0.0"
-  },
-  "dependencies": {
-    "radash": "^12.1.0"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^16.0.1",
