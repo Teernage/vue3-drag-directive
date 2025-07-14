@@ -1,0 +1,33 @@
+version: 2
+updates:
+  # 配置 npm 依赖项更新
+  - package-ecosystem: "npm"
+    # 在根目录查找 package.json 文件
+    directory: "/"
+    # 每周检查一次更新
+    schedule:
+      interval: "weekly"
+    # 允许最多 5 个开放的 PR
+    open-pull-requests-limit: 5
+    
+  # 为文档目录配置 npm 依赖项更新
+  - package-ecosystem: "npm"
+    # 在 docs 目录查找 package.json 文件
+    directory: "/docs"
+    # 每周检查一次更新
+    schedule:
+      interval: "weekly"
+    # 允许最多 5 个开放的 PR
+    open-pull-requests-limit: 5
+    # 忽略某些依赖项的更新
+    ignore:
+      # 忽略 esbuild 的安全更新，直到 VitePress 支持更高版本
+      - dependency-name: "esbuild"
+        update-types: ["version-update:semver-major"]
+    
+  # 配置 GitHub Actions 工作流程更新
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
