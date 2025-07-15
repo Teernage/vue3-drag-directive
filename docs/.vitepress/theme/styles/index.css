@@ -1,0 +1,23 @@
+/* 演示组件的样式 */
+.vp-doc .demo-container {
+  margin: 1.5rem 0;
+}
+
+/* 确保拖拽示例组件在文档中显示正常 */
+.grid-container {
+  height: 400px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* 修复在文档中可能出现的样式冲突 */
+.vp-doc .app-item {
+  margin: 0;
+  height: auto;
+}
+
+/* 确保拖拽时的样式正确 */
+.vue-drag-list-directive__dragging {
+  opacity: 0.5;
+  background-color: transparent;
+}
