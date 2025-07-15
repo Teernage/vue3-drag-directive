@@ -28,8 +28,7 @@
 
 <script setup>
 import { ref, reactive } from 'vue';
-import { vDragList } from 'vue3-drag-directive'; // 通过npm包引入拖拽指令
-// import { vDragList } from '../directive/dragList'; // 直接引入拖拽指令
+import { vDragList } from 'vue3-drag-directive';
 
 const title = ref('九宫格');
 
