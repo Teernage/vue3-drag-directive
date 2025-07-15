@@ -3,7 +3,7 @@ import Demo from '../components/Demo.vue';
 import DragListPlugin from '../../../src';
 
 // 导入示例组件
-import DragListDemo from '../../../examples/vue-demo/src/components/DragList.vue';
+import DragListDemo from '../components/examples/DragList.vue';
 
 // 导入样式
 import './styles/index.css';
