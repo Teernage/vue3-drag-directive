@@ -3,7 +3,9 @@
   margin: 1.5rem 0;
 }
 
-/* 确保拖拽示例组件在文档中显示正常 */
+
+
+/* 确保拖拽示例组件在文档中显示正常  */
 .grid-container {
   height: 400px;
   max-width: 400px;
