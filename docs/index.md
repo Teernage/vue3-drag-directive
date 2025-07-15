@@ -17,7 +17,7 @@ hero:
 features:
   - icon: 🚀
     title: 高性能
-    details: 基于FLIP动画技术，提供流畅的拖拽体验
+    details: 基于 FLIP 动画算法，结合分帧渲染与最小化 DOM 操作，实现丝滑、流畅的拖拽体验。
   - icon: 💡
     title: 轻量级
     details: 无外部依赖，体积小，加载快
