@@ -4,6 +4,9 @@ hero:
   name: Vue3 Drag Directive
   text: 轻量级、高性能的拖拽排序解决方案
   tagline: 简单易用的Vue3拖拽列表指令
+  image:
+    src: /img/avatar.avif
+    alt: 列表拖拽
   actions:
     - theme: brand
       text: 快速开始
