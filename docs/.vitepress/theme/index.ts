@@ -5,6 +5,7 @@ import DragListPlugin from 'vue3-drag-directive';
 // 导入示例组件
 import DragListDemo from '../components/examples/DragList.vue';
 import NestedListsDemo from '../components/examples/NestedLists.vue';
+import CustomDragHandle from '../components/examples/CustomDragHandle.vue';
 
 // 导入样式
 import './styles/index.css';
@@ -20,6 +21,7 @@ export default {
 
     app.component('NestedListsDemo', NestedListsDemo);
 
+    app.component('CustomDragHandle', CustomDragHandle);
     // 注册拖拽指令
     app.use(DragListPlugin);
   },
