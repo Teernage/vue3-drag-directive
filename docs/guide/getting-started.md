@@ -33,11 +33,7 @@ import DragListPlugin from 'vue3-drag-directive';
 
 const app = createApp(App);
 
-// 使用默认配置
 app.use(DragListPlugin);
-
-// 或者自定义指令名称
-app.use(DragListPlugin, { name: 'my-drag' });
 
 app.mount('#app');
 ```
