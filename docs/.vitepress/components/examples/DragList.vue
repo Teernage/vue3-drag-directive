@@ -135,4 +135,24 @@ body {
 .app-item[data-id='item-9'] {
   background: linear-gradient(135deg, #667eea, #764ba2);
 }
+
+@media (max-width: 768px) {
+  .grid-container {
+    gap: 3px;
+    max-width: 350px;
+    aspect-ratio: 0;
+    height: auto;
+  }
+
+  .grid-container .app-item {
+    font-size: 14px;
+    height: 50px;
+    width: 50px;
+  }
+
+  .container {
+    padding: 20px; /* 移动端内边距调整 */
+    margin: 10px;
+  }
+}
 </style>
