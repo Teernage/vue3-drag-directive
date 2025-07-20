@@ -172,7 +172,7 @@ const onDragEnd = (event) => {
 ```css
 /* 拖拽中的元素 */
 .vue-drag-list-directive__dragging {
-  opacity: 0.5;
+  opacity: 0;
   background-color: transparent;
 }
 ```
@@ -184,7 +184,5 @@ const onDragEnd = (event) => {
 2. **DOM 元素需要 data-id 属性**：对应的 DOM 元素需要设置 `data-id` 属性，其值应与数据项的 `id` 相匹配。
 
 3. **响应式更新**：当列表数据发生变化时，拖拽功能会自动重新初始化。
-
-4. **性能考虑**：对于非常长的列表（如超过 1000 项），可能需要考虑虚拟滚动等优化措施。
 
 在下一节中，我们将探讨[高级用法](/guide/advanced-usage)，包括嵌套列表、横向拖拽等更复杂的场景。
