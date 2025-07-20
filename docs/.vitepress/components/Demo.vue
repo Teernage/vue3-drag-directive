@@ -10,20 +10,20 @@
     </div>
     <div class="demo-actions">
       <button class="code-button" @click="toggleCode">
-        {{ showCode ? '隐藏代码' : '查看代码' }}
+        {{ showCode ? '隐藏示例代码' : '查看示例代码' }}
       </button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref } from 'vue';
 
-const showCode = ref(false)
+const showCode = ref(false);
 
 const toggleCode = () => {
-  showCode.value = !showCode.value
-}
+  showCode.value = !showCode.value;
+};
 </script>
 
 <style scoped>
