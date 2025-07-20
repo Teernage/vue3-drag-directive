@@ -3,8 +3,6 @@
   margin: 1.5rem 0;
 }
 
-
-
 /* 确保拖拽示例组件在文档中显示正常  */
 .grid-container {
   height: 400px;
@@ -14,7 +12,7 @@
 
 /* 修复在文档中可能出现的样式冲突 */
 .vp-doc .app-item {
-  margin: 0;
+  margin: 5px;
   height: auto;
 }
 

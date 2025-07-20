@@ -1,9 +1,10 @@
 import DefaultTheme from 'vitepress/theme';
 import Demo from '../components/Demo.vue';
-import DragListPlugin from '../../../src';
+import DragListPlugin from 'vue3-drag-directive';
 
 // 导入示例组件
 import DragListDemo from '../components/examples/DragList.vue';
+import NestedListsDemo from '../components/examples/NestedLists.vue';
 
 // 导入样式
 import './styles/index.css';
@@ -16,6 +17,8 @@ export default {
 
     // 注册示例组件
     app.component('DragListDemo', DragListDemo);
+
+    app.component('NestedListsDemo', NestedListsDemo);
 
     // 注册拖拽指令
     app.use(DragListPlugin);
