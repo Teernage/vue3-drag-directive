@@ -49,12 +49,12 @@ export const vDragList = {
     // 注入CSS样式
     injectStyles();
 
-    const { list, canDrag = true, dragItemClass = 'app-item' } = binding.value;
+    const { list, canDrag = true, dragItemClass = 'app-item', dragHandleClass } = binding.value;
 
     if (canDrag) {
       setChildrenDraggable(el, true);
       clearDraggingClass(el);
-      initDragList(el, list, dragItemClass);
+      initDragList(el, list, dragItemClass, dragHandleClass);
     }
   },
 
@@ -75,7 +75,7 @@ export const vDragList = {
     clearDraggingClass(el);
 
     // 检查数据是否发生变化
-    const { list, canDrag, dragItemClass = 'app-item' } = binding.value;
+    const { list, canDrag, dragItemClass = 'app-item', dragHandleClass } = binding.value;
 
     // 如果数据有变化
     if (!isEqual(binding.value, binding.oldValue)) {
@@ -85,7 +85,7 @@ export const vDragList = {
       if (canDrag) {
         // 启用拖拽
         setChildrenDraggable(el, true);
-        initDragList(el, list, dragItemClass);
+        initDragList(el, list, dragItemClass, dragHandleClass);
       } else {
         // 禁用拖拽，确保显示禁止图标
         setChildrenDraggable(el, false);
@@ -121,7 +121,7 @@ function clearSelection() {
  * @param data 列表项的数据
  * @param dragItemClass 可拖拽项的类名
  */
-function initDragList(el, data, dragItemClass) {
+function initDragList(el, data, dragItemClass, dragHandleClass) {
   el.currentDragNode = null;
   const list = el;
   let flip;
@@ -230,9 +230,33 @@ function initDragList(el, data, dragItemClass) {
     el._isDragging = false;
   }
 
+
+
+  let handleMouseDown;
+  if (dragHandleClass) {
+    handleMouseDown = function (e) {
+      // 找到最近的拖拽项
+      const dragItem = e.target.closest(`.${dragItemClass}`);
+      if (!dragItem) return;
+
+      // 只处理当前列表的直接子拖拽项
+      if (dragItem.parentElement !== el) return;
+
+
+      // 阻止非拖拽句柄的点击事件冒泡，防止触发不必要的操作
+      if (!e.target.classList.contains(dragHandleClass)) {
+        preventDefault(e)
+        return false;
+      }
+    };
+    el.addEventListener('mousedown', handleMouseDown);
+  }
+
+
   function preventDefault(e) {
     e.preventDefault();
   }
+
 
   // 添加事件监听
   el.addEventListener('dragstart', handleDragStart);
@@ -240,6 +264,7 @@ function initDragList(el, data, dragItemClass) {
   el.addEventListener('dragend', handleDragEnd);
   el.addEventListener('dragover', preventDefault);
   el.addEventListener('drop', preventDefault);
+  el.addEventListener('mousedown', handleMouseDown);
 
   // 使用全局事件系统添加全局事件
   globalDragEvents.add();
@@ -250,6 +275,7 @@ function initDragList(el, data, dragItemClass) {
     handleDragEnter,
     handleDragEnd,
     preventDefault,
+    handleMouseDown,
   };
 }
 
@@ -261,10 +287,13 @@ function initDragList(el, data, dragItemClass) {
 function unmountDragList(el) {
   if (!el._dragListHandlers || el._isDragging) return; // 没有事件处理器就直接返回
 
-  const { handleDragStart, handleDragEnter, handleDragEnd, preventDefault } =
+  const { handleDragStart, handleDragEnter, handleDragEnd, preventDefault, handleMouseDown } =
     el._dragListHandlers;
 
   // 移除元素事件
+  if (handleMouseDown) {
+    el.removeEventListener('mousedown', handleMouseDown);
+  }
   el.removeEventListener('dragstart', handleDragStart);
   el.removeEventListener('dragenter', handleDragEnter);
   el.removeEventListener('dragend', handleDragEnd);
