@@ -8,8 +8,8 @@ export default defineConfig({
     logo: '/logo.png',
     nav: [
       { text: '指南', link: '/guide/' },
-      { text: '组件', link: '/components/' },
-      { text: 'GitHub', link: 'https://github.com/yourusername/vue3-drag-directive' }
+      // { text: '组件', link: '/components/' },
+      { text: 'GitHub', link: 'https://github.com/Teernage/vue3-drag-directive' }
     ],
     sidebar: {
       '/guide/': [
