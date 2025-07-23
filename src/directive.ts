@@ -49,7 +49,12 @@ export const vDragList = {
     // 注入CSS样式
     injectStyles();
 
-    const { list, canDrag = true, dragItemClass = 'app-item', dragHandleClass } = binding.value;
+    const {
+      list,
+      canDrag = true,
+      dragItemClass = 'app-item',
+      dragHandleClass,
+    } = binding.value;
 
     if (canDrag) {
       setChildrenDraggable(el, true);
@@ -75,7 +80,12 @@ export const vDragList = {
     clearDraggingClass(el);
 
     // 检查数据是否发生变化
-    const { list, canDrag, dragItemClass = 'app-item', dragHandleClass } = binding.value;
+    const {
+      list,
+      canDrag,
+      dragItemClass = 'app-item',
+      dragHandleClass,
+    } = binding.value;
 
     // 如果数据有变化
     if (!isEqual(binding.value, binding.oldValue)) {
@@ -230,33 +240,30 @@ function initDragList(el, data, dragItemClass, dragHandleClass) {
     el._isDragging = false;
   }
 
-
-
   let handleMouseDown;
   if (dragHandleClass) {
     handleMouseDown = function (e) {
-      // 找到最近的拖拽项
-      const dragItem = e.target.closest(`.${dragItemClass}`);
-      if (!dragItem) return;
+      // 当嵌套列表的每一层都启用拖拽手柄时，点击最内层手柄会导致事件冒泡到所有父级列表。
+      // 需要确保事件只在当前层处理，防止多层列表重复响应。
 
-      // 只处理当前列表的直接子拖拽项
-      if (dragItem.parentElement !== el) return;
+      // 获取最近的带有 data-drag-list-id 属性的父容器，即当前拖拽列表容器
+      const currentTargetContainer = e.target.closest('[data-drag-list-id]');
+      // 如果事件触发的不是当前列表（即不是本层），则直接返回，不做处理
+      if (currentTargetContainer.dataset.dragListId !== listId) return;
 
-
-      // 阻止非拖拽句柄的点击事件冒泡，防止触发不必要的操作
+      // 如果点击的元素不是手柄，阻止默认行为（如选中文本等），并阻止事件继续处理
       if (!e.target.classList.contains(dragHandleClass)) {
-        preventDefault(e)
+        // 阻止非拖拽句柄的点击事件冒泡，停止触发拖拽
+        preventDefault(e);
         return false;
       }
     };
     el.addEventListener('mousedown', handleMouseDown);
   }
 
-
   function preventDefault(e) {
     e.preventDefault();
   }
-
 
   // 添加事件监听
   el.addEventListener('dragstart', handleDragStart);
@@ -287,8 +294,13 @@ function initDragList(el, data, dragItemClass, dragHandleClass) {
 function unmountDragList(el) {
   if (!el._dragListHandlers || el._isDragging) return; // 没有事件处理器就直接返回
 
-  const { handleDragStart, handleDragEnter, handleDragEnd, preventDefault, handleMouseDown } =
-    el._dragListHandlers;
+  const {
+    handleDragStart,
+    handleDragEnter,
+    handleDragEnd,
+    preventDefault,
+    handleMouseDown,
+  } = el._dragListHandlers;
 
   // 移除元素事件
   if (handleMouseDown) {
