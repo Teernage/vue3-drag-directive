@@ -21,6 +21,6 @@
     "vitepress": "^1.0.0-rc.40"
   },
   "dependencies": {
-    "vue3-drag-directive": "^1.1.0"
+    "vue3-drag-directive": "^1.1.1"
   }
 }
