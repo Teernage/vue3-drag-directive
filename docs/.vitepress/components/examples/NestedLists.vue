@@ -6,7 +6,7 @@
       v-drag-list="{
         list: mainList,
         canDrag: true,
-        dragItemClass: 'app-item',
+        dragItemClass: 'main-drag-item',
         dragHandleClass: 'drag-handle',
       }"
       @drag-mode-start="onDragStart"
@@ -16,7 +16,7 @@
         v-for="item in mainList"
         :key="item.id"
         :data-id="item.id"
-        class="app-item main-item"
+        class="main-drag-item main-item"
         :class="{ 'has-children': item.children && item.children.length > 0 }"
       >
         <div class="item-header">
@@ -42,7 +42,7 @@
           v-drag-list="{
             list: item.children,
             canDrag: true,
-            dragItemClass: 'app-item',
+            dragItemClass: 'child-drag-item',
             dragHandleClass: 'drag-handle',
           }"
           @drag-mode-start="onDragStart"
@@ -52,7 +52,7 @@
             v-for="child in item.children"
             :key="child.id"
             :data-id="child.id"
-            class="app-item child-item"
+            class="child-drag-item child-item"
             :class="{
               'has-children': child.children && child.children.length > 0,
             }"
@@ -65,7 +65,7 @@
               </div>
               <div class="item-actions">
                 <button
-                  v-if="child.children.length > 0"
+                  v-if="child.children && child.children.length > 0"
                   @click="toggleExpand(child)"
                   class="expand-btn"
                 >
@@ -83,7 +83,7 @@
               v-drag-list="{
                 list: child.children,
                 canDrag: true,
-                dragItemClass: 'app-item',
+                dragItemClass: 'grandchild-drag-item',
                 dragHandleClass: 'drag-handle',
               }"
               @drag-mode-start="onDragStart"
@@ -93,7 +93,7 @@
                 v-for="grandChild in child.children"
                 :key="grandChild.id"
                 :data-id="grandChild.id"
-                class="app-item grandchild-item"
+                class="grandchild-drag-item grandchild-item"
               >
                 <div class="item-header">
                   <div class="drag-handle">⋮⋮</div>
@@ -113,7 +113,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import { vDragList } from 'vue3-drag-directive';
+import { vDragList } from '../directive/dragList';
 
 // 示例数据
 const mainList = ref([
@@ -258,7 +258,10 @@ const toggleExpand = (item) => {
   margin-left: 20px;
 }
 
-.app-item {
+/* 通用拖拽项样式 */
+.main-drag-item,
+.child-drag-item,
+.grandchild-drag-item {
   background: white;
   border: 1px solid #ddd;
   border-radius: 6px;
@@ -267,13 +270,47 @@ const toggleExpand = (item) => {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.app-item:hover {
+.main-drag-item:hover,
+.child-drag-item:hover,
+.grandchild-drag-item:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   transform: translateY(-1px);
 }
 
-.app-item.has-children {
+.main-drag-item.has-children,
+.child-drag-item.has-children,
+.grandchild-drag-item.has-children {
   border-left: 4px solid #2196f3;
+}
+
+/* 一级项目特殊样式 */
+.main-drag-item {
+  border-left: 4px solid #2196f3;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.main-drag-item:hover {
+  background: linear-gradient(135deg, #f8fbff 0%, #e3f2fd 100%);
+}
+
+/* 二级项目特殊样式 */
+.child-drag-item {
+  border-left: 4px solid #4caf50;
+  background: linear-gradient(135deg, #ffffff 0%, #f1f8e9 100%);
+}
+
+.child-drag-item:hover {
+  background: linear-gradient(135deg, #f1f8e9 0%, #c8e6c9 100%);
+}
+
+/* 三级项目特殊样式 */
+.grandchild-drag-item {
+  border-left: 4px solid #ff9800;
+  background: linear-gradient(135deg, #ffffff 0%, #fff3e0 100%);
+}
+
+.grandchild-drag-item:hover {
+  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
 }
 
 .item-header {
@@ -289,10 +326,17 @@ const toggleExpand = (item) => {
   font-weight: bold;
   user-select: none;
   padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.drag-handle:hover {
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 .drag-handle:active {
   cursor: grabbing;
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 .item-content {
@@ -304,6 +348,21 @@ const toggleExpand = (item) => {
 .item-content h5 {
   margin: 0 0 4px 0;
   color: #333;
+}
+
+.item-content h3 {
+  font-size: 18px;
+  color: #1976d2;
+}
+
+.item-content h4 {
+  font-size: 16px;
+  color: #388e3c;
+}
+
+.item-content h5 {
+  font-size: 14px;
+  color: #f57c00;
 }
 
 .item-content p {
@@ -335,15 +394,20 @@ const toggleExpand = (item) => {
   background: #bbdefb;
 }
 
-.main-item {
-  border-left: 4px solid #2196f3;
-}
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .nested-drag-container {
+    padding: 10px;
+  }
 
-.child-item {
-  border-left: 4px solid #4caf50;
-}
+  .drag-list-container.level-2,
+  .drag-list-container.level-3 {
+    margin-left: 10px;
+  }
 
-.grandchild-item {
-  border-left: 4px solid #ff9800;
+  .item-header {
+    padding: 8px;
+    gap: 8px;
+  }
 }
 </style>
