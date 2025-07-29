@@ -7,8 +7,8 @@ import EditableDragList from './components/EditableDragList.vue';
 <template>
   <div>
     <!-- <DragList /> -->
-    <NestedLists />
-    <!-- <EditableDragList /> -->
+    <!-- <NestedLists /> -->
+    <EditableDragList />
   </div>
 </template>
 

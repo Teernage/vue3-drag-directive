@@ -75,7 +75,7 @@
 
 <script setup>
 import { reactive } from 'vue';
-import { vDragList } from '../directive/dragList';
+import { vDragList } from 'vue3-drag-directive';
 import { ElInput, ElButton } from 'element-plus';
 
 // 响应式数据
