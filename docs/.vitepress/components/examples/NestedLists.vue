@@ -113,7 +113,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import { vDragList } from '../directive/dragList';
+import { vDragList } from 'vue3-drag-directive';
 
 // 示例数据
 const mainList = ref([
