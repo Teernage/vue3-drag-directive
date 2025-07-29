@@ -1,10 +1,14 @@
 <script setup>
 import DragList from './components/DragList.vue';
+import NestedLists from './components/NestedLists.vue';
+import EditableDragList from './components/EditableDragList.vue';
 </script>
 
 <template>
   <div>
-    <DragList />
+    <!-- <DragList /> -->
+    <NestedLists />
+    <!-- <EditableDragList /> -->
   </div>
 </template>
 
