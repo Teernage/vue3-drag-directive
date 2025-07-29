@@ -134,6 +134,8 @@ function clearSelection() {
 function initDragList(el, data, dragItemClass, dragHandleClass) {
   el.currentDragNode = null;
   const list = el;
+  list._isDragAllowed = false;
+
   let flip;
   // 生成一个唯一的ID，用于标识这个拖拽列表
   const listId = `drag-list-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
