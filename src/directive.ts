@@ -141,21 +141,23 @@ function initDragList(el, data, dragItemClass, dragHandleClass) {
   el.dataset.dragListId = listId;
 
   function handleDragStart(e) {
+    const target = e.target;
+
+    if (!isCurrentListEvent(e, listId)) {
+      return;
+    }
+
+    if (shouldPreventDragStart(el._isDragAllowed, dragHandleClass)) {
+      e.preventDefault();
+      return;
+    }
+
     // 清除所有文本选区
     // 1. 防止拖拽过程中出现文字选区残留，造成视觉干扰
     // 2. 避免在拖拽操作时误触发文本复制/拖动行为
     // 3. 解决浏览器在拖拽元素和文本选区同时存在时的行为冲突
     // (测试案例：当拖拽开始时如果存在文本选区，会导致拖拽图标显示异常)
     clearSelection();
-
-    const target = e.target;
-
-    if (
-      !target ||
-      target.closest(`[data-drag-list-id]`).dataset.dragListId !== listId
-    ) {
-      return;
-    }
 
     el.dispatchEvent(
       new CustomEvent('drag-mode-start', {
@@ -186,7 +188,7 @@ function initDragList(el, data, dragItemClass, dragHandleClass) {
     preventDefault(e);
 
     // 如果有拖拽正在进行，并且不是当前列表，则忽略
-    if (currentDraggingListId && currentDraggingListId !== listId) {
+    if (isNotCurrentListDragging(listId)) {
       return;
     }
 
@@ -238,27 +240,32 @@ function initDragList(el, data, dragItemClass, dragHandleClass) {
     }
 
     el._isDragging = false;
+    el._actualClickTarget = null;
+    el._isDragAllowed = false;
   }
 
-  let handleMouseDown;
-  if (dragHandleClass) {
-    handleMouseDown = function (e) {
-      // 当嵌套列表的每一层都启用拖拽手柄时，点击最内层手柄会导致事件冒泡到所有父级列表。
-      // 需要确保事件只在当前层处理，防止多层列表重复响应。
+  /**
+   * 处理鼠标按下事件
+   *
+   * @param e 鼠标事件对象
+   */
+  function handleMouseDown(e) {
+    if (!isCurrentListEvent(e, listId)) {
+      return;
+    }
 
-      // 获取最近的带有 data-drag-list-id 属性的父容器，即当前拖拽列表容器
-      const currentTargetContainer = e.target.closest('[data-drag-list-id]');
-      // 如果事件触发的不是当前列表（即不是本层），则直接返回，不做处理
-      if (currentTargetContainer.dataset.dragListId !== listId) return;
+    // 记录实际点击的元素
+    el._actualClickTarget = e.target;
 
-      // 如果点击的元素不是手柄，阻止默认行为（如选中文本等），并阻止事件继续处理
-      if (!e.target.classList.contains(dragHandleClass)) {
-        // 阻止非拖拽句柄的点击事件冒泡，停止触发拖拽
-        preventDefault(e);
-        return false;
-      }
-    };
-    el.addEventListener('mousedown', handleMouseDown);
+    // 判断是否配置了拖拽手柄模式
+    if (
+      isDragHandleMode(dragHandleClass) &&
+      !isInvalidDragTarget(e.target, el, dragItemClass)
+    ) {
+      const isHandle = isDragHandle(e.target, dragHandleClass);
+      console.log(`isHandle: ${isHandle}`);
+      el._isDragAllowed = isHandle;
+    }
   }
 
   function preventDefault(e) {
@@ -323,6 +330,8 @@ function unmountDragList(el) {
   el._isDragging = false;
 
   delete el._dragListHandlers;
+  delete el._actualClickTarget;
+  delete el._isDragAllowed;
 }
 
 function clearDraggingClass(el) {
@@ -383,4 +392,73 @@ function injectStyles() {
 // 全局注册
 export function registerDragList(app) {
   app.directive('drag-list', vDragList);
+}
+
+/**
+ * 判断给定的元素是否是拖拽句柄
+ *
+ * @param element 需要判断的元素
+ * @param dragHandleClass 拖拽句柄的类名
+ * @returns 如果元素是拖拽句柄，则返回 true；否则返回 false
+ */
+function isDragHandle(element, dragHandleClass) {
+  return element.closest(`.${dragHandleClass}`) !== null;
+}
+
+/**
+ * 判断是否为拖拽手柄模式
+ *
+ * @param dragHandleClass 拖拽手柄的类名
+ * @returns 如果dragHandleClass不为undefined，则返回true，否则返回false
+ */
+function isDragHandleMode(dragHandleClass) {
+  return dragHandleClass !== undefined;
+}
+
+function shouldPreventDragStart(isDragAllowed, dragHandleClass) {
+  return isDragAllowed === false && isDragHandleMode(dragHandleClass);
+}
+
+/**
+ * 判断当前事件是否属于指定列表的事件
+ *
+ * @param e 事件对象
+ * @param listId 指定列表的ID
+ * @returns 如果当前事件属于指定列表的事件，则返回true；否则返回false
+ */
+function isCurrentListEvent(e, listId) {
+  if (!e.target) return false;
+
+  const eventList = e.target.closest('[data-drag-list-id]');
+  if (!eventList) return false;
+
+  return eventList.dataset.dragListId === listId;
+}
+
+/**
+ * 判断当前拖拽的列表ID是否与传入的列表ID相同。
+ *
+ * @param listId 要检查的列表ID
+ * @returns 如果当前拖拽的列表ID与传入的列表ID不同，则返回true；否则返回false
+ */
+function isNotCurrentListDragging(listId) {
+  return currentDraggingListId && currentDraggingListId !== listId;
+}
+
+/**
+ * 防止点击子列表空白区域或非拖拽项时，父列表把子列表容器当成拖拽项
+ *
+ * 阻止条件：
+ * 1. 点击容器本身 (e.target === el) - 点击空白区域
+ * 2. 未找到拖拽项目 (!dragItem) - 点击不可拖拽的子元素
+ *
+ * 典型场景：
+ * - 嵌套列表：点击子列表空白处时，防止父列表误把子容器当作拖拽项
+ * - 混合内容：点击非拖拽元素时，防止触发意外的拖拽行为，点击子列表非拖拽项会冒泡杯外层列表的拖拽事件捕获到
+ *
+ * 只有明确点击到可拖拽项目时，才允许继续执行拖拽逻辑
+ */
+function isInvalidDragTarget(target, containerEl, dragItemClass) {
+  const dragItem = target && target.closest(`.${dragItemClass}`);
+  return target === containerEl || !dragItem;
 }
