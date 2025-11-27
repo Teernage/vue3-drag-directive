@@ -2,13 +2,16 @@
 import DragList from './components/DragList.vue';
 import NestedLists from './components/NestedLists.vue';
 import EditableDragList from './components/EditableDragList.vue';
+
+import ProductDragListDemo from './components/ProductDragListDemo.vue';
 </script>
 
 <template>
   <div>
     <!-- <DragList /> -->
     <!-- <NestedLists /> -->
-    <EditableDragList />
+    <ProductDragListDemo />
+    <!-- <EditableDragList /> -->
   </div>
 </template>
 
