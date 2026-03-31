@@ -201,6 +201,12 @@ function initDragList(el, data, dragItemClass, dragHandleClass) {
     }
 
     const children = Array.from(el.children);
+
+    // 确保 target 是当前列表的子元素，防止嵌套列表导致的 DOM 操作错误
+    if (!children.includes(target)) {
+      return
+    }
+
     const sourceIndex = children.indexOf(el.currentDragNode);
     const targetIndex = children.indexOf(target);
 
