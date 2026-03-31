@@ -1,10 +1,11 @@
 # vue3-drag-directive 指令使用文档
 
-![Npm 版本](https://img.shields.io/badge/vue3--drag--directive-v1.1.3-green)
+![Npm 版本](https://img.shields.io/badge/vue3--drag--directive-v1.1.6-green)
+
 
 vue3-drag-directive 是一个轻量级的 Vue3 拖拽指令，提供了列表项的拖拽排序功能，支持平滑的 flip 动画效果。本文档将详细介绍如何安装和使用这个指令。
 
-源码仓库地址：https://github.com/Teernage/vue3-drag-directive
+源码仓库地址：<https://github.com/Teernage/vue3-drag-directive>
 
 ## 目录结构
 
@@ -79,7 +80,7 @@ app.mount('#app');
 </template>
 ```
 
-2. 局部注册（按需引入）
+1. 局部注册（按需引入）
    在单个组件中注册使用：
 
 ```vue
@@ -121,11 +122,10 @@ const handleDragEnd = (event) => {
 
 `v-drag-list` 指令接受一个对象作为参数，包含以下属性：
 
-- **list**（必填，Array）  
+- **list**（必填，Array）\
   要排序的数据列表。每个 item 项必须包含唯一的 `id` 属性。
-
-- **canDrag**（可选，Boolean，默认值：true）  
+- **canDrag**（可选，Boolean，默认值：true）\
   是否启用拖拽功能。
-
-- **dragItemClass**（可选，String，默认值：'app-item'）  
+- **dragItemClass**（可选，String，默认值：'app-item'）\
   列表项的类名，决定哪些元素可拖拽。需要和 `v-for` 渲染项的 class 保持一致。
+
